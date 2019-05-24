@@ -523,8 +523,8 @@ class UsuarioController
 
 	public function getReferenceFile($request, $response)
 	{
-            $csv = file_get_contents( __DIR__ . '/../../resources/csv/ClickPortaria_Modelo_de_Importacao.csv');
-	    $file = 'ClickPortaria_Modelo_de_Importacao.csv';
+            $csv = file_get_contents( __DIR__ . '/../../resources/csv/PortariaLive_Modelo_de_Importacao.csv');
+	    	$file = 'PortariaLive_Modelo_de_Importacao.csv';
 
             header("Content-Type: application/force-download");
             header('Content-Type: "application/octet-stream"');
