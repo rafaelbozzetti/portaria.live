@@ -1,0 +1,100 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Veículos</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions form-inline">
+                        <form action="/veiculos" method="post">
+                            <input type="text" name="search" class="form-control" value="{{ vehicles_filter }}" />
+                            <button class="btn btn-primary" name="btn-search" type="submit">Procurar</button>
+                            <button class="btn btn-primary" name="btn-clear" type="submit"> <i class="glyphicon glyphicon-remove"></i> </button>
+                        </form>
+                    </div>            
+                    <div class="dropdown" style="width:200px;">
+                      <button  class="btn btn-secundary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Exportar CSV
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        {% for block in blocks %}
+                            <li><a target="_blank" href="/veiculos/exportar/{{ block.id }}">Exportar {{ block.name }}</a></li>
+                        {% endfor %}
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/veiculos/exportar/0"> Exportar Todos</a></li>
+                      </ul>
+                    </div>
+
+                </header>
+                <div class="panel-body">
+                    <table class="table table-striped" id="datatable-tabletools">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th>
+                                <th>Tipo</th>
+                                <th>Cor</th>
+                                <th>Placa</th>
+                                <th>Tipo</th> 
+                                <th class="actions">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehicle in vehicles %}
+                                <tr class="gradeX">
+                                    <td><b>{{ vehicle.model|e }}</b></td>
+                                    <td>
+                                        {% if (vehicle.type == 1) %}
+                                            <b>Carro</b>
+                                        {% elseif (vehicle.type == 2) %}
+                                            <b>Moto</b>
+                                        {% elseif (vehicle.type == 3) %}
+                                            <b>Utilitário</b>
+                                        {% elseif (vehicle.type == 4) %}
+                                            <b>Caminhão</b>
+                                        {% endif %}                                       
+                                    </td>
+                                    <td><b>{{ vehicle.color|e }}</b></td>
+                                    <td><b>{{ vehicle.plate|e }}</b></td>
+                                    <td>
+                                        {% if vehicle.visitor_name  %}
+                                            {{ vehicle.visitor_name }} <b>(Visitante)</b>
+                                        {% endif %}
+                                        {% if vehicle.people_name  %}
+                                            {{ vehicle.people_name }} <b>(Morador)</b>
+                                        {% endif %}                                        
+				                    </td>
+                                    <td class="actions-hover actions-fade">
+                                        <a class="btn btn-primary" href="/veiculos/edit/{{ vehicle.id }}"><i class="fa fa-pencil"></i></a>
+                                        <a class="btn btn-primary   " href="/veiculos/remove/{{ vehicle.id }}" class="delete-row"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div style="text-align:right;">
+                {{ pagination.html | raw }}
+            </div>
+            
+        </div>
+    <!-- end: page -->
+       
+
+{% endblock %}

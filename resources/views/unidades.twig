@@ -1,0 +1,76 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-multiselect/bootstrap-multiselect.css" />
+
+    <header class="page-header">
+        <h2>Unidades</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions form-inline">
+                        <form action="/unidades" method="post">
+                            {% if blocks|length > 0 %}
+<!--                             <select class="form-control" name="blocks[]" multiple="multiple" data-plugin-multiselect data-multiselect-toggle-all="true">
+                                {% for block in blocks %}
+                                    <option value="{{block.id}}"> {{ block.name }}</option>
+                                {% endfor %}
+                            </select> -->
+                            {% endif %}
+
+                            <input type="text" name="search" class="form-control" value="{{ units_filter }}" />
+                            <button class="btn btn-primary" name="btn-search" type="submit">Procurar</button>
+                            <button class="btn btn-primary" name="btn-clear" type="submit"> <i class="glyphicon glyphicon-remove"></i> </button>
+                        </form>
+                    </div>            
+                    <a href="/unidades/novo" class="btn btn-primary"> <i class="fa fa-plus"></i>  Novo</a>
+                </header>
+                <div class="panel-body">
+                    <table class="table table-striped" id="datatable-tabletools">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Nome</th>
+                                <th>Bloco</th>
+                                <th class="actions">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for unit in units %}
+                                <tr class="gradeX">
+                                    <td><b>{{ unit.number|e }}</b></td>
+                                    <td><b>{{ unit.name|e }}</b></td>
+                                    <td><b>{{ unit.block.name|e }}</b></td>
+                                    <td class="actions-hover actions-fade">
+                                        <a class="btn btn-primary" href="/unidades/edit/{{ unit.id }}"><i class="fa fa-pencil"></i></a>
+                                        <a class="btn btn-primary   " href="/unidades/remove/{{ unit.id }}" class="delete-row"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div style="text-align:right;">
+                {{ pagination.html | raw }}
+            </div>
+            
+        </div>
+    <!-- end: page -->
+       
+
+{% endblock %}

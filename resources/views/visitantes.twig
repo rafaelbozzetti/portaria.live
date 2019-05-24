@@ -1,0 +1,66 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Visitantes</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions form-inline">
+                        <form action="/visitantes" method="post">
+                            <input type="text" name="search" class="form-control" value="{{ blocks_filter }}" />
+                            <button class="btn btn-primary" name="btn-search" type="submit">Procurar</button>
+                            <button class="btn btn-primary" name="btn-clear" type="submit"> <i class="glyphicon glyphicon-remove"></i> </button>
+                        </form>
+                    </div>            
+                    <a href="/visitantes/novo" class="btn btn-primary"> <i class="fa fa-plus"></i>  Novo</a>
+                </header>
+                <div class="panel-body">
+                    <table class="table table-striped" id="datatable-tabletools">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Documento</th>
+                                <th>Tipo</th>
+                                <th class="actions">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for resident in visitors %}
+                                <tr class="gradeX">
+                                    <td><b>{{ resident.name|e }}</b></td>
+                                    <td><b>{{ resident.document|e }}</b></td>
+                                    <td><b>{{ resident.service_provider == 1 ? 'Prestador de Serviço' : 'Visitante' }}</b></td>
+                                    <td class="actions-hover actions-fade">
+                                        <a class="btn btn-primary" href="/visitantes/edit/{{ resident.id }}"><i class="fa fa-pencil"></i></a>
+                                        <a class="btn btn-primary   " href="/visitantes/remove/{{ resident.id }}" class="delete-row"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div style="text-align:right;">
+                {{ pagination.html | raw }}
+            </div>
+            
+        </div>
+    <!-- end: page -->
+       
+
+{% endblock %}

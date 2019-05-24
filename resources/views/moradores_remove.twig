@@ -1,0 +1,175 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Moradores</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+            <div class="col-md-12">
+                <form id="form1" class="form-horizontal" action="/moradores/remove" method="post">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            <div class="panel-actions">
+                                <a href="#" class="fa fa-caret-down"></a>
+                            </div>
+
+                            <h2 class="panel-title">Remover</h2>
+                            <p class="panel-subtitle">
+                                
+                            </p>
+                        </header>
+                        <div class="panel-body">
+                            
+                            {{ csrf_field() | raw }}
+
+                            <input type="hidden" name="id" value="{{ resident.id }}" />
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"></label>
+                                <div class="col-sm-8">
+                                    {% if (resident.img != "") %}
+                                      <img src="/assets/avatars/{{resident.img}}"  class="img-thumbnail" style="width:150px;height:150px;" />
+                                    {% else %}
+                                      <img src="/assets/images/avatar_resident.png"  class="img-thumbnail" style="width:150px;height:150px;" />
+                                    {% endif %}   
+
+                                    <input type="hidden" name="img" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Nome: </label>
+                                <div class="col-sm-8">
+                                    <input type="text" readonly name="name" class="form-control input-lg" disabled value="{{ resident.name }}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Email: </label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="email" class="form-control input-lg" disabled value="{{ resident.email }}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Telefones: </label>
+                                <div class="col-sm-8" id="phone-list">
+                                {% for phone in resident.phones %}
+                                    <div class="phone-item-{{phone.id}}">
+                                        <div class="col-sm-10" style="padding:5px 0px 5px 0px;">
+                                            <input type="text" name="phone[]" value="{{phone.number}}" disabled class="form-control input-lg">
+                                        </div>
+                                        <div class="col-sm-2" style="padding:5px 0px 5px 5px;">
+                                            <button type="button" class="btn btn-lg phone-item-rm-0 btn-secundary"><i class="fa fa-trash-o"></i></button>
+                                            <button type="button" class="btn btn-lg phone-item-add-0 btn-secundary"><i class="fa fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Bloco/Quadra: </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control input-lg" name="block" disabled>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Unidade: </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control input-lg" name="unit" disabled>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"><h4>Veículos</h4></label>
+                                <div class="col-sm-8">
+                                    <div id="vehicle-list">
+                                        {% if resident.vehicles|length > 0 %}
+                                            {% for vehicle in resident.vehicles %}
+
+                                                <div class="vehicle-item-{{vehicle.id}}">
+                                                    <div class="col-sm-10" style="padding:15px 0px 5px 0px;display:inline;" >
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" disabled id="radioExample1{{vehicle.id}}" value="1" {{ (vehicle.type == 1) ? 'checked' : '' }} >
+                                                             <label for="radioExample1{{vehicle.id}}"><b>Carro</b></label>
+                                                         </div>
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" disabled id="radioExample2{{vehicle.id}}" value="2" {{ (vehicle.type == 2) ? 'checked' : '' }} >
+                                                             <label for="radioExample2{{vehicle.id}}"><b>Moto</b></label>
+                                                         </div>
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" disabled id="radioExample3{{vehicle.id}}" value="3" {{ (vehicle.type == 3) ? 'checked' : '' }} >
+                                                             <label for="radioExample3{{vehicle.id}}"><b>Utilitário</b></label>
+                                                         </div>
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" disabled id="radioExample4{{vehicle.id}}" value="4" {{ (vehicle.type == 4) ? 'checked' : '' }} >
+                                                             <label for="radioExample4{{vehicle.id}}"><b>Caminhão</b></label>
+                                                         </div>
+                                                     </div>
+                                                     <div class="col-sm-2" style="padding:14px 0px 0px 0px;">
+                                                         <button type="button" class="btn btn-sm phone-item-rm-0 btn-secundary" onclick="removeVehicleItem('{{vehicle.id}}');"><i class="fa fa-trash-o"></i></button>
+                                                          <button type="button" class="btn btn-sm phone-item-add-0 btn-secundary" style="margin-left:3px;" onclick="addVehicleItem();"><i class="fa fa-plus"></i></button>
+                                                      </div>      
+                                                      <div class="col-sm-10" style="padding:5px 0px 5px 0px;">
+                                                          <label>Modelo:</label>
+                                                          <input type="text" disabled name="vehicle[{{vehicle.id}}][model]" value="{{vehicle.model}}" class="form-control input-sm">
+                                                      </div>
+                                                      <div class="col-sm-10" style="padding:0px">
+                                                          <div class="col-sm-6" style="padding:0px 0px 5px 0px;">
+                                                              <label>Placa:</label>
+                                                              <input type="text" disabled name="vehicle[{{vehicle.id}}][plate]" value="{{vehicle.plate}}" class="form-control input-sm">
+                                                          </div>
+                                                          <div class="col-sm-6" style="padding:0px 0px 5px 5px;">
+                                                              <label>Cor:</label>
+                                                              <input type="text" disabled name="vehicle[{{vehicle.id}}][color]" value="{{vehicle.color}}" class="form-control input-sm">
+                                                          </div>
+                                                      </div>
+                                                </div>
+
+                                            {% endfor %}
+
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <footer class="panel-footer">
+                            <a href="/moradores" class="btn btn-secundary"> Cancelar</a>
+                            <button type="submit" class="btn btn-primary"> <i class="fa fa-trash-o"></i> Remover </button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+
+
+            
+        </div>
+    <!-- end: page -->
+       
+    <script type="text/javascript">
+
+      $(document).ready(function() {
+          mount_block_and_units({{ resident.unit.block_id }},{{ resident.unit_id }});
+      });
+
+    </script>       
+
+{% endblock %}

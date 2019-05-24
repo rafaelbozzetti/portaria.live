@@ -1,0 +1,167 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Registro de Visitantes</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+
+            <section class="panel">
+                <header class="panel-heading">
+                    <form action="/visitantes/registros" method="post">
+                        <div class="panel-actions form-inline">
+<!--                                 <input type="text" name="search" class="form-control" value="{{ blocks_filter }}" /> -->
+                                <button class="btn btn-primary" name="btn-search" type="submit">Procurar</button>
+                                <button class="btn btn-primary" name="btn-clear" type="submit"> <i class="glyphicon glyphicon-remove"></i> </button>
+                        </div>  
+                        <div class="form-group">
+                            <div class="input-daterange input-group" data-plugin-datepicker>
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span>
+                                <input type="text" class="form-control" name="start" value="{{ visitors_log_start }}">
+                                <span class="input-group-addon">Até</span>
+                                <input type="text" class="form-control" name="end" value="{{ visitors_log_end }}">
+                            </div>
+                        </div>   
+                    </form>
+                </header>
+                <div class="panel-body">
+                    <div class="panel-body">
+
+                        <div class="col-sm-4">
+                            <div class="widget-summary widget-summary-sm">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-success">
+                                        <i class="fa fa-male"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Autorizado</h4>
+                                        <div class="info">
+                                            <strong class="amount">{{ totals.1 }}</strong>
+                                            <!-- <span class="text-primary">(-)</span> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="widget-summary widget-summary-sm">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-danger">
+                                        <i class="fa fa-male"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Não Autorizado</h4>
+                                        <div class="info">
+                                            <strong class="amount">{{ totals.2 }}</strong>
+                                            <!-- <span class="text-primary">(-)</span> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="widget-summary widget-summary-sm">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-warning">
+                                        <i class="fa fa-male"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Não Atendido</h4>
+                                        <div class="info">
+                                            <strong class="amount">{{ totals.3 }}</strong>
+                                            <!-- <span class="text-primary">(-)</span> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <h4>Registros</h4>
+
+                    <table class="table table-striped" id="datatable-tabletools">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Data</th>
+                                <th>Visitante</th>
+                                <th>Veículo</th>
+                                <th>Autorizado por</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in registros %}
+                                <tr class="gradeX">
+                                    <td>{{ registro.id|e }}</td>
+                                    <td>{{ log.created_at|date("m/d/Y H:i") }}</td>
+                                    <td>{{ registro.visitor_name|e }}</td>
+                                    <td>
+                                        {% if (registro.model != "" ) %}
+                                            {{ registro.model|e }} 
+
+                                            {{ (registro.color !=  "") ?  registro.color|e  : '' }}
+
+                                            <b>{{ (registro.plate !=  "") ? registro.plate|e  : '' }}</b>
+                                            
+                                        {% else %}
+                                            -
+                                        {% endif %}
+
+                                    </td>
+                                    <td>{{ registro.people_name|e }}</td>
+                                    <td>
+                                      <span class="label
+                                        {% if (registro.type == 1) %}
+                                          label-success
+                                        {% elseif (registro.type == 2) %}
+                                          label-danger
+                                        {% elseif (registro.type == 3) %}
+                                          label-warning
+                                        {% endif %} ">
+
+                                        {% if (registro.type == 1) %}
+                                          Autorizado
+                                        {% elseif (registro.type == 2) %}
+                                          Não Autorizado
+                                        {% elseif (registro.type == 3) %}
+                                          Nâo Atendido
+                                        {% endif %}
+                                    </span>
+
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <div style="text-align:right;">
+                {{ pagination.html | raw }}
+            </div>
+            
+        </div>
+    <!-- end: page -->
+       
+
+{% endblock %}

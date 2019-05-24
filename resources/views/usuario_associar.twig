@@ -1,0 +1,74 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Associar Campos do CSV</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions form-inline">
+                    </div>            
+
+                </header>
+                <div class="panel-body" style="overflow: auto;max-height:550px;">
+                    <form method="post" action="/admin/salvar_associacao">
+
+                        {{ csrf_field() | raw }}
+                        
+                        <div style="overflow:scroll; scroll: auto">
+                            <table class="table table-striped" id="datatable-tabletools">
+                                <thead>
+                                    <tr>
+                                        {% for ref in csv_ref %}
+                                            <td>
+                                                <select class="form-control" style="width:200px;" name="associacao[{{ loop.index }}]">
+                                                    <option value="morador" {{ (loop.index == 1) ? 'selected' : '' }} > Morador </option>
+                                                    <option value="telefones" {{ (loop.index == 2) ? 'selected' : '' }} > Telefones </option>
+                                                    <option value="apto" {{ (loop.index == 3) ? 'selected' : '' }}> Apto </option>
+                                                    <option value="nome_apto" {{ (loop.index == 4) ? 'selected' : '' }}> Nome Apto </option>
+                                                    <option value="bloco" {{ (loop.index == 5) ? 'selected' : '' }}> Bloco </option>                                                    
+                                                    <option value="modelo_carro" {{ (loop.index == 6) ? 'selected' : '' }}> Modelo Veículo </option>
+                                                    <option value="cor_carro" {{ (loop.index == 7) ? 'selected' : '' }}> Cor Veículo </option>
+                                                    <option value="placa_carro" {{ (loop.index == 8) ? 'selected' : '' }}> Placa Veículo </option>
+                                                    <option value="tipo_carro" {{ (loop.index == 9) ? 'selected' : '' }}> Tipo Veículo </option>
+                                                </select>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ref in csv  %}
+                                        <tr class="gradeX">
+                                            {% for r in ref  %}
+                                                <td style="border: 1px solid #d2d2d2;">{{ r|e }} </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+
+                        <button class="btn btn-primary pull-right">Salvar</button>
+                        <a href="/admin" class="btn btn-secundary pull-right">Cancelar</a>
+                    </form>
+                </div>
+            </section>
+        </div>
+    <!-- end: page -->
+       
+
+{% endblock %}

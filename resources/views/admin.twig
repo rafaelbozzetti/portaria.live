@@ -1,0 +1,235 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Administração</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+            <div class="col-md-12">
+              <section class="panel">
+                  <form id="form1" class="form-horizontal" action="/admin/condominio" method="post">
+                    <header class="panel-heading">
+                        <div class="panel-actions">
+                            <a href="#" class="fa fa-caret-down"></a>
+                        </div>
+                        <h2 class="panel-title">Informações do Condomínio</h2>
+                        <p class="panel-subtitle"></p>
+                    </header>
+                    <div class="panel-body">
+                        
+                        {{ csrf_field() | raw }}
+
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Nome: </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="name" value="{{name}}" disabled class="form-control input-lg">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Endereço: </label>
+                            <div class="col-sm-8">
+                                <input type="text" name="address" value="{{address}}" disabled class="form-control input-lg">
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="panel-footer">
+                        <button type="button" onclick="changeInfo();" class="btn btn-primary btn-info-alter"> <i class="fa fa-check"></i> Alterar </button>
+                        <button type="submit" class="btn btn-secundary btn-info-save"> <i class="fa fa-check"></i> Salvar </button>
+                    </footer>
+                  </form>
+              </section>     
+
+              <section class="panel">
+
+                  <header class="panel-heading">
+                      <div class="panel-actions">
+                          <a href="#" class="fa fa-caret-down"></a>
+                      </div>
+
+                      <h2 class="panel-title">Usuários do Sistema</h2>
+                      <p class="panel-subtitle">
+                          
+                      </p>
+                  </header>
+
+                  <div class="panel-body">
+                      <button type="button" class="btn btn-primary" data-toggle="modal" onclick="addNewUser();">Novo</button>
+                      <div class="panel-body">
+                          <table class="table table-striped" id="datatable-tabletools">
+                              <thead>
+                                  <tr>
+                                      <th>Nome</th>
+                                      <th>E-mail</th>
+                                      <th>Tipo</th>
+                                      <th class="actions">Ações</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                              {% for user in users %}
+                                <tr class="gradeX">
+                                    <td><b>{{ user.name|e }}</b></td>
+                                    <td><b>{{ user.email|e }}</b></td>
+                                    <td>
+                                        {% if user.type == 1 %}
+                                          Administrador
+                                        {% else %}
+                                          Portaria
+                                        {% endif %}                                      
+                                    </td>
+                                    <td class="actions-hover actions-fade" style="text-align:center;">
+                                        <button class="btn btn-primary" onclick="openUserToEdit({{ user.id }});"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-primary" onclick="removeUser({{ user.id }});"><i class="fa fa-trash-o"></i></button>
+                                    </td>
+                                </tr>
+                              {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </section>
+
+              <section class="panel">
+                  <header class="panel-heading">
+                      <div class="panel-actions">
+                          <a href="#" class="fa fa-caret-down"></a>
+                      </div>
+
+                      <h2 class="panel-title">Importação de Dados</h2>
+                      <br />
+
+
+                      <h5>Blocos, Unidades, Moradores, Telefones e Veículos</h5>
+
+                      <form action="/admin/associar" method="post" enctype="multipart/form-data">
+
+                        {{ csrf_field() | raw }}
+
+                  			<div class="fileupload fileupload-new" data-provides="fileupload"><input type="hidden">
+                            <div class="input-append">
+                              <div class="uneditable-input">
+                                <span class="fileupload-preview"></span>
+                              </div>
+                              <span class="btn btn-default btn-file">
+                                <input type="file" name="csv">
+                              </span>
+                            </div>
+                  			</div>
+
+                        <button class="btn btn-primary" style="margin-top:20px;" type="submit">Enviar</button>
+
+                        <button onclick="getfile();" class="btn btn-secundary" style="margin-top:20px;"><i class="glyphicon glyphicon-file"></i> Baixar Arquivo de referência</button>
+
+                      </form>
+
+                      <hr />
+
+
+                  </header>
+
+                  <footer class="panel-footer">
+		                
+                  </footer>
+
+
+              </section>
+            </div>    
+       
+
+        </div>
+    <!-- end: page -->
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><b>Novo Usuário</b></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	        {{ csrf_field() | raw }}
+          
+          <input type="hidden" name="edited_user_id" value="" class="form-control">
+
+          <div class="form-group form-name">
+            <label class="col-sm-3 control-label">Nome <span class="required">*</span></label>
+            <div class="col-sm-9">
+              <input type="text" name="username" value="" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group form-email">
+            <label class="col-sm-3 control-label">Email <span class="required">*</span></label>
+            <div class="col-sm-9">
+              <input type="email" name="email" value="" class="form-control"  required>
+            </div>
+          </div>
+          <div class="form-group form-password">
+            <label class="col-sm-3 control-label">Senha <span class="required">*</span></label>
+            <div class="col-sm-9">
+              <input type="password" name="password" value="" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Nível de usuário</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="type" required> 
+                <option value="1">Administrador</option>
+                <option value="2">Portaria</option>
+              </select>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" name="adduser">Salvar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+    function changeInfo() {
+        $('input[name="name"]').attr('disabled', false);
+        $('input[name="address"]').attr('disabled', false);
+      	$('.btn-info-alter').removeClass('btn-primary');
+      	$('.btn-info-alter').addClass('btn-secundary');
+
+      	$('.btn-info-save').removeClass('btn-secundary');
+      	$('.btn-info-save').addClass('btn-primary');
+    }
+
+    function getfile() {
+        window.open('/api/get_reference_file','_blank');
+    }
+
+    function addNewUser() {
+
+      $("#exampleModal").modal();
+      $('input[name="username"]').val('');
+      $('input[name="email"]').val('');
+      $('input[name="password"]').val('');
+
+    }
+
+</script>
+
+
+
+{% endblock %}

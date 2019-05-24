@@ -1,0 +1,46 @@
+{% extends 'app_login.twig' %}
+
+{% block content %}
+
+<div style="height:100px;">
+    <div class="col-xs-1 col-sm-2 col-md-4"></div>      
+    <div class="col-xs-10 col-sm-8 col-md-4">
+        <div class="col-xs-12 col-sm-12 col-md-12" style="text-align: center;">
+        	{% if msg %}
+                <div class="alert alert-info">
+                    <?php echo $msg; ?>
+                </div>
+        	{% endif %}
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12" style="margin-top:150px;">
+            <div class="panel " style="margin: 0 auto;">
+                <div class="panel-body" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+                    <div class="row" style="padding: 20px;text-align:center;">
+			             <img src="/assets/images/asgard.png" />
+                    </div>
+                    <form action="/login" method="post" name="login">
+                    	
+                    	{{ csrf_field() | raw }}
+
+                        <label>
+                            Usuário                            
+                        </label>
+                        <input name="email" type="text" class="form-control input-lg" placeholder="E-mail">
+
+                        <label>
+                            Senha                            
+                        </label>
+                        <input name="pass" type="password" class="form-control input-lg" placeholder="Senha">
+
+                        <br />
+                        <input name="submit" class="btn btn-lg btn-block btn-default" type="submit" value="Acessar">
+                    </form>                 
+                    
+                </div>                
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-1 col-sm-2 col-md-4"></div>
+</div>    
+
+{% endblock %}

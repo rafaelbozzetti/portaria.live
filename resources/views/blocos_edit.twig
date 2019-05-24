@@ -1,0 +1,59 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Blocos e Quadras</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+        <div class="row">
+            <div class="col-md-12">
+                <form id="form1" class="form-horizontal" action="/blocos/edit" method="post">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            <div class="panel-actions">
+                                <a href="#" class="fa fa-caret-down"></a>
+                            </div>
+
+                            <h2 class="panel-title">Alterar</h2>
+                            <p class="panel-subtitle">
+                                
+                            </p>
+                        </header>
+                        <div class="panel-body">
+                            
+                            {{ csrf_field() | raw }}
+
+                            <input type="hidden" name="id" value="{{ block.id }}" />
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Nome: </label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="name" class="form-control input-lg" value="{{ block.name }}">
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="panel-footer">
+                            <a href="/blocos" class="btn btn-secundary"> Cancelar</a>
+                            <button type="submit" class="btn btn-primary"> <i class="fa fa-check"></i> Salvar </button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+
+
+            
+        </div>
+    <!-- end: page -->
+       
+
+{% endblock %}

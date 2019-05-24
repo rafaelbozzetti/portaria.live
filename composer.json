@@ -1,0 +1,29 @@
+{
+    "require": {
+        "slim/slim": "^3.12",
+        "slim/twig-view": "^2.4",
+        "slim/csrf": "^0.8.3",
+        "robmorgan/phinx": "^0.10.6",
+        "illuminate/database": "^5.8",
+        "vlucas/phpdotenv": "^3.3",
+        "monolog/monolog": "^1.24",
+        "abedmaatalla/slim-twig-translation": "^1.0",
+        "bryanjhv/slim-session": "~3.0",
+        "illuminate/pagination": "^5.8",
+        "league/csv": "^9.2"
+    },
+
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+
+    "autoload": {
+    	"psr-4": {
+    		"Rapid\\": "app"
+    	}
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 -t public",
+        "test": "vendor/bin/phpunit tests --colors"
+    }    
+}

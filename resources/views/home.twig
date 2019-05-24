@@ -1,0 +1,542 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Painel de Controle</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+    <!-- start: page -->
+
+        <div class="row">
+          <div class="col-md-6" style="padding:0px;">
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions">
+                        <a href="#" class="fa fa-caret-down"></a>
+                    </div>
+
+                    <input type="hidden" name="home" value="1" />
+
+                    <h2 class="panel-title">Novo Registro de Visitante</h2>
+                    <p class="panel-subtitle"></p>
+                </header>
+                <div class="panel-body">
+                    <div class="col-md-4" style="padding:0px;margin:10px 0px;">
+			                 <label>	Bloco/Quadra </label>
+                       <br />
+                        <select class="form-control input-lg multiselecthome" id="block_home" name="block" style="width:100%;">
+                            {% for block in blocks %}
+                                <option value="{{ block.id }}"> {{ block.name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-8" style="padding:0px 0px 0px 10px;margin:10px 0px;">
+			                   <label>	Apto/Casa </label>
+                         <br />
+                        <select class="form-control input-lg multiselecthome" id="unit_home" name="unit"  style="width:100%;">
+                        </select>
+                    </div>
+
+                    <div class="col-md-12" style="padding:0px;margin:10px 0px;">
+			                   <label>	Visitante </label>
+                         <br />
+                        <div class="btn-group input-group" style="width:100%;">
+                          <span class="input-group-addon" onclick="$('.visitor-item-list').toggle();">
+                            <i class="fa fa-angle-down"></i>
+                          </span>
+                          <input type="hidden" name="visitor_id" />
+                          <input type="hidden" name="person_id" />
+                          <input type="text" name="visitor_name" class="form-control input-lg" placeholder="Nome, Sobrenome, Documento" style="width:100%;" />
+                          <ul class="dropdown-menu visitor-item-list" style="width:100%;cursor:pointer;">
+                            
+                          </ul>
+                        </div>
+                    </div>
+
+                    <div>
+                       <buttom type="button" class="btn btn-primary pull-right" onclick="visitor_register();">Registrar</buttom>
+                    </div>
+                    
+            		    <button type="button" class="btn btn-primary" onclick="openmodal_add_visitor();">
+            			   Novo Visitante 
+            		    </button>
+
+
+                </div>
+            </section>
+          </div>
+          <div class="col-md-6" style="padding-right:0px;">
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions">
+                        <a href="#" class="fa fa-caret-down"></a>
+                    </div>
+
+                    <h2 class="panel-title">Informações do Morador</h2>
+                    <p class="panel-subtitle">
+                    </p>
+                </header>
+                <div class="panel-body" style="min-height: 250px;">
+              	
+                  <div class="list-group person-item-list">
+
+                  </div>
+                </div>
+            </section>
+          </div>           
+        </div>
+
+        <div class="row">
+            <section class="panel">
+                <header class="panel-heading">
+                    <div class="panel-actions">
+                        <a href="#" class="fa fa-caret-down"></a>
+                    </div>
+
+                    <h2 class="panel-title">Últimos Eventos</h2>
+                    <p class="panel-subtitle">
+                        
+                    </p>
+                </header>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        {% if visitor_log|length > 0 %}
+                            {% for log in visitor_log %}
+                                <li class="list-group-item  
+                                {% if (log.type == 1) %}
+                                  list-group-item-success
+                                {% elseif (log.type == 2) %}
+                                  list-group-item-danger
+                                {% elseif (log.type == 3) %}
+                                  list-group-item-warning
+                                {% endif %}
+                                "
+                                style="margin-bottom:2px;">
+
+                                  <span class="label
+                                    {% if (log.type == 1) %}
+                                      label-success
+                                    {% elseif (log.type == 2) %}
+                                      label-danger
+                                    {% elseif (log.type == 3) %}
+                                      label-warning
+                                    {% endif %}
+                                  pull-right">
+
+                                    {% if (log.type == 1) %}
+                                      Autorizado
+                                    {% elseif (log.type == 2) %}
+                                      Não Autorizado
+                                    {% elseif (log.type == 3) %}
+                                      Nâo Atendido
+                                    {% endif %}
+                                </span>
+
+                                  {{ log.created_at|date("d/m/Y H:i") }}
+
+                                  ( Visitante: <b>{{ log.visitor_name }}</b>)   (Morador: <b>{{ log.people_name }}</b> )
+                                </li>                            
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </section>            
+        </div>
+    <!-- end: page -->
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><b>Novo Visitante</b></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label"></label>
+                  <div class="col-sm-10">
+                      <img src="/assets/images/avatar_resident.png"  class="img-thumbnail" style="width:150px;height:150px;" />
+                      <input type="hidden" name="img" />
+                      <button type="button" class="btn btn-secundary" onclick="openWebCamCapture();"> <i class="fa fa-camera"></i> Webcam</button>
+                      <button type="button" class="btn btn-secundary" onclick="openUpload();"> <i class="fa fa-photo"></i> Imagem</button>
+                  </div>
+          </div>
+
+          <div class="modal-body">
+            <div class="form-group form-name">
+                <label class="col-sm-2 control-label">Nome: </label>
+                <div class="col-sm-10">
+                    <input type="text" name="add_visitor_name" class="form-control input-lg">
+                </div>
+            </div>
+
+            <div class="form-group form-document">
+                <label class="col-sm-2 control-label">Documento: </label>
+                <div class="col-sm-10">
+                    <input type="text" name="add_visitor_document" class="form-control input-lg">
+                </div>
+            </div>
+
+            <div class="form-group form-servide-privider">
+                <label class="col-sm-2 control-label">Tipo: </label>
+                <div class="col-sm-10">
+                    <select name="add_service_provider" class="form-control input-lg">
+                        <option value="0"> Visitante </option>
+                        <option value="1"> Prestador de Serviço </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group form-document">
+                <label class="col-sm-2 control-label">Veículos: </label>
+                <div class="col-sm-10">
+                    <div id="vehicle-list"></div>
+                </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="add_visitor">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="visitaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <a href="/" class="btn btn-secondary pull-right">
+              <span aria-hidden="true">&times;</span>
+            </a>
+            <h5 class="modal-title" id="exampleModalLabel"><b>Registrar Visita</b></h5>
+          </div>
+          <div class="modal-body">
+              <section class="panel panel-featured-left panel-featured-primary">
+                  <div class="panel-body">
+                    <div class="widget-summary widget-summary-sm">
+                      <div class="widget-summary-col widget-summary-col-icon">
+                        <div class="summary-icon bg-primary">
+                          <i class="fa fa-male"></i>
+                        </div>
+                      </div>
+                      <div class="widget-summary-col">
+                        <div class="summary">
+                          <h4 class="title">Visitante</h4>
+                          <div class="info">
+                            <strong class="amount" id="reg_visitor_name"></strong>
+                            <span class="text-primary" id="reg_visitor_document"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section class="panel panel-featured-left panel-featured-primary">
+                    <div class="panel-body">
+                      <div class="widget-summary widget-summary-sm">
+                        <div class="widget-summary-col widget-summary-col-icon">
+                          <div class="summary-icon bg-primary">
+                            <i class="fa fa-home"></i>
+                          </div>
+                        </div>
+                        <div class="widget-summary-col">
+                          <div class="summary">
+                            <h4 class="title">Destino</h4>
+                            <div class="info">
+                              <strong class="amount" id="reg_unit_and_block"></strong>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </section>
+                <section class="panel panel-featured-left panel-featured-primary">
+                    <div class="panel-body">
+                      <div class="widget-summary widget-summary-sm">
+                        <div class="widget-summary-col widget-summary-col-icon">
+                          <div class="summary-icon bg-primary">
+                            <i class="fa fa-user"></i>
+                          </div>
+                        </div>
+                        <div class="widget-summary-col">
+                          <div class="summary">
+                            <h4 class="title">Autorizado por</h4>
+                            <div class="info">
+                              <strong class="amount" id="reg_resident_name"></strong>
+                              <div class="person-item-list"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </section>
+          </div>
+
+          <div class="modal-footer">
+            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-success" onclick="register_visitor(1);">Autorizado</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-danger" onclick="register_visitor(2);">Não Autorizado</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-warning" onclick="register_visitor(3);">Não Atendido</button>
+              </div>
+            </div>
+            <br />
+            <a href="/" class="btn btn-secondary">Cancelar</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><b>Upload de Imagem</b></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+             <div class="grid" style="height:500px;">
+                 <div class="col-12">
+                     <div class="actions">
+                           <input type="file" id="upload" name="foto" value="Choose a file" accept="image/*">
+                           <input type="hidden" class="upload-croppie" name="upload-croppie" />
+                     </div>
+                 </div>
+                 <hr />
+                 <div class="col-12">
+                     <div class="upload-msg">
+                     </div>
+                     <div class="upload-demo-wrap">
+                         <div id="upload-demo"></div>
+                     </div>
+                 </div>
+             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="saveCoopieUpload();">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="modalWebcam" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><b>Imagem da Webcam</b></h5>
+            <button type="button" class="close" onclick="closeLayerWebcam();">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+               <div id="webcam_preview"></div>
+               <div id="webcam_capture_preview" style="display:none;"></div>
+               <button class="btn btn-primary btn-capture" onclick="generateCapture();">Capturar</button>
+               <button class="btn btn-default btn-webcam" onclick="redefineWebcam();" style="display:none;">Webcam</button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeLayerWebcam();" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="saveCoopieCapture();">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script type="text/javascript">
+
+     var webcam = false;
+
+      function openWebCamCapture() {
+        
+        $("#modalWebcam").modal();
+        $("#modalWebcam").show();
+        $('.btn-webcam').hide();
+        $('.btn-capture').show();
+        $('.btn-crop').hide();
+
+        $('#webcam_capture_preview').hide();
+        $('#webcam_preview').show();    
+
+        webcam = Webcam.set({
+          width: 332,
+          height: 256,
+          image_format: 'jpeg',
+          jpeg_quality: 90
+        });
+        Webcam.attach('#webcam_preview');
+      }
+
+      function generateCapture() {
+
+          Webcam.snap( function(data_uri) {
+            
+            $('#webcam_capture_preview').show();
+            $('#webcam_preview').hide();
+            $('#webcam_capture_preview').html('<img src="'+data_uri+'" />');
+            $('.btn-capture').hide();
+            $('.btn-crop').show();
+            $('.btn-webcam').show();
+
+            $uploadCrop = $('#webcam_capture_preview img').croppie({
+              viewport: {
+                  width: 200,
+                  height: 200,
+                  type: 'square'
+              },
+              enableExif: true,
+              enableResize: false,
+              boundary: {
+                  width: 300,
+                  height: 300 
+              }
+            });
+
+            Webcam.reset();
+
+          });
+      }
+
+      function saveCoopieCapture() {
+
+          $uploadCrop.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+          }).then(function (resp) {
+            $('input[name="img"]').val(resp);
+            $('.img-thumbnail').attr('src', resp);
+            $("#modalWebcam").hide();
+          });
+          Webcam.reset();
+      }
+
+      function saveCoopieUpload() {
+
+          $uploadCropUp.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+          }).then(function (resp) {
+            $('input[name="img"]').val(resp);
+            $('.img-thumbnail').attr('src', resp);
+            $('.layer_fileupload').hide();       
+            $("#modalUpload").hide(); 
+          }); 
+
+      }
+
+      function redefineWebcam() {
+
+            $('#webcam_capture_preview').hide();
+            $('#webcam_preview').show();
+            $('.btn-crop').hide();
+            $('.btn-capture').show();
+            $('.btn-webcam').hide();
+      }
+
+      function closeLayerWebcam() {
+          $("#modalWebcam").hide();
+          Webcam.reset();
+      }
+
+
+      var $uploadCropUp;
+
+      function demoUpload() {
+        
+        function readFile(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              $uploadCropUp.croppie('bind', {
+                url: e.target.result
+              }).then(function(){
+                
+              });
+              
+            }        
+            reader.readAsDataURL(input.files[0]);
+          }          
+        }
+
+        $uploadCropUp = $('#upload-demo').croppie({
+          viewport: {
+              width: 250,
+              height: 250,
+              type: 'square'
+          },
+          enableExif: true,
+          enableResize: true,
+          boundary: {
+              width: 300,
+              height: 300 
+          }
+        });
+
+        $('#upload').on('change', function () { readFile(this); });
+
+      }
+
+      function openUpload() {
+        $("#modalUpload").modal();
+        $("#modalUpload").show();
+      } 
+
+
+
+      $(document).ready(function() {
+        
+        $('#block_home').change(function() {
+          get_units_by_block();
+        });
+
+        if(  $('input[name="home"]').val() != undefined ) {
+          $('select[name="unit"]').change(function() {
+            get_units_person();
+          });   
+        }
+
+        get_units_by_block();
+
+        $(window).keydown(function(event){
+          if(event.keyCode == 13) {
+            if($('select[name="unit"]').val() == '') {
+              event.preventDefault();
+              return false;       
+            }
+          }
+        });
+
+        demoUpload();
+
+      });
+
+      
+
+    </script>
+
+{% endblock %}

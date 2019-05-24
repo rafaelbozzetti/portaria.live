@@ -1,0 +1,414 @@
+{% extends 'app.twig' %}
+
+{% block content %}
+
+    <header class="page-header">
+        <h2>Moradores</h2>
+    
+        <div class="right-wrapper pull-right">
+            <ol class="breadcrumbs">
+                <li><span>Geral</span></li>                                
+            </ol>
+    
+            <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+        </div>
+    </header>
+
+
+
+    <!-- start: page -->
+        <div class="row">
+            <div class="col-md-12">
+                <form id="form1" class="form-horizontal" action="/moradores/edit" method="post">
+                    <section class="panel">
+                        <header class="panel-heading">
+                            <div class="panel-actions">
+                                <a href="#" class="fa fa-caret-down"></a>
+
+                            </div>
+
+                            <h2 class="panel-title">Alterar</h2>
+                            <p class="panel-subtitle">
+                                
+                            </p>
+                        </header>
+                        <div class="panel-body">
+                            
+                            {{ csrf_field() | raw }}
+
+                            <input type="hidden" name="id" value="{{ resident.id }}" />
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"></label>
+                                <div class="col-sm-8">
+                                    {% if (resident.img != "") %}
+                                      <img src="/assets/avatars/{{resident.img}}"  class="img-thumbnail" style="width:150px;height:150px;" />
+                                    {% else %}
+                                      <img src="/assets/images/avatar_resident.png"  class="img-thumbnail" style="width:150px;height:150px;" />
+                                    {% endif %}   
+
+                                    <input type="hidden" name="img" />
+                                    <button type="button" class="btn btn-secundary" onclick="openWebCamCapture();"> <i class="fa fa-camera"></i> Webcam</button>
+                                    <button type="button" class="btn btn-secundary" onclick="openUpload();"> <i class="fa fa-photo"></i> Imagem</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Nome: </label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="name" class="form-control input-lg" value="{{ resident.name }}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Email: </label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="email" class="form-control input-lg" value="{{ resident.email }}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Telefones: </label>
+                                <div class="col-sm-8" id="phone-list">
+                                {% if resident.phones|length > 0 %}
+                                    {% for phone in resident.phones %}
+                                        <div class="phone-item-{{phone.id}}">
+                                            <div class="col-sm-10" style="padding:5px 0px 5px 0px;">
+                                                <input type="text" name="phone[]" value="{{phone.number}}" class="form-control input-lg">
+                                            </div>
+                                            <div class="col-sm-2" style="padding:5px 0px 5px 5px;">
+                                                <button type="button" class="btn btn-sm phone-item-rm-0 btn-secundary" onclick="removePhoneItem({{phone.id}});"><i class="fa fa-trash-o"></i></button>
+                                                <button type="button" class="btn btn-sm phone-item-add-0 btn-secundary" onclick="addPhoneItem();" ><i class="fa fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                
+                                {% else %}
+
+                                    <div class="phone-item-0">
+                                        <div class="col-sm-10" style="padding:5px 0px 5px 0px;">
+                                            <input type="text" name="phone[]" class="form-control input-lg">
+                                        </div>
+                                        <div class="col-sm-2" style="padding:5px 0px 5px 5px;">
+                                            <button type="button" class="btn btn-lg phone-item-rm-0 btn-secundary" onclick="removePhoneItem(0);"><i class="fa fa-trash-o"></i></button>
+                                            <button type="button" class="btn btn-lg phone-item-add-0 btn-secundary" onclick="addPhoneItem();" ><i class="fa fa-plus"></i></button>
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Bloco/Quadra: </label>
+                                <div class="col-sm-8">
+                                    <select class="form-control multiselecthome input-lg" name="block">
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Unidade: </label>
+                                <div class="col-sm-8">
+                                    <input type="hidden" name="unit_id" value="{{ resident.unit.id }}" />
+                                    <select class="form-control multiselecthome input-lg" name="unit">
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"><h4>Veículos</h4></label>
+                                <div class="col-sm-8">
+                                    <div id="vehicle-list">
+                                        {% if resident.vehicles|length > 0 %}
+                                            {% for vehicle in resident.vehicles %}
+
+                                                <div class="vehicle-item-{{vehicle.id}}">
+                                                    <div class="col-sm-10" style="padding:15px 0px 5px 0px;display:inline;" >
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" id="radioExample1{{vehicle.id}}" value="1" {{ (vehicle.type == 1) ? 'checked' : '' }} >
+                                                             <label for="radioExample1{{vehicle.id}}"><b>Carro</b></label>
+                                                         </div>
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" id="radioExample2{{vehicle.id}}" value="2" {{ (vehicle.type == 2) ? 'checked' : '' }} >
+                                                             <label for="radioExample2{{vehicle.id}}"><b>Moto</b></label>
+                                                         </div>
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" id="radioExample3{{vehicle.id}}" value="3" {{ (vehicle.type == 3) ? 'checked' : '' }} >
+                                                             <label for="radioExample3{{vehicle.id}}"><b>Utilitário</b></label>
+                                                         </div>
+                                                         <div class="radio-custom radio-primary checkbox-inline">
+                                                             <input type="radio" name="vehicle[{{vehicle.id}}][type]" id="radioExample4{{vehicle.id}}" value="4" {{ (vehicle.type == 4) ? 'checked' : '' }} >
+                                                             <label for="radioExample4{{vehicle.id}}"><b>Caminhão</b></label>
+                                                         </div>
+                                                     </div>
+                                                     <div class="col-sm-2" style="padding:14px 0px 0px 0px;">
+                                                         <button type="button" class="btn btn-sm phone-item-rm-0 btn-secundary" onclick="removeVehicleItem('{{vehicle.id}}');"><i class="fa fa-trash-o"></i></button>
+                                                          <button type="button" class="btn btn-sm phone-item-add-0 btn-secundary" style="margin-left:3px;" onclick="addVehicleItem();"><i class="fa fa-plus"></i></button>
+                                                      </div>      
+                                                      <div class="col-sm-10" style="padding:5px 0px 5px 0px;">
+                                                          <label>Modelo:</label>
+                                                          <input type="text" name="vehicle[{{vehicle.id}}][model]" value="{{vehicle.model}}" class="form-control input-sm">
+                                                      </div>
+                                                      <div class="col-sm-10" style="padding:0px">
+                                                          <div class="col-sm-6" style="padding:0px 0px 5px 0px;">
+                                                              <label>Placa:</label>
+                                                              <input type="text" name="vehicle[{{vehicle.id}}][plate]" value="{{vehicle.plate}}" class="form-control input-sm">
+                                                          </div>
+                                                          <div class="col-sm-6" style="padding:0px 0px 5px 5px;">
+                                                              <label>Cor:</label>
+                                                              <input type="text" name="vehicle[{{vehicle.id}}][color]" value="{{vehicle.color}}" class="form-control input-sm">
+                                                          </div>
+                                                      </div>
+                                                </div>
+
+                                            {% endfor %}
+                                        
+                                        {% else %}
+
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <footer class="panel-footer">
+                            <a href="/moradores" class="btn btn-secundary"> Cancelar</a>
+                            <button type="submit" class="btn btn-primary"> <i class="fa fa-check"></i> Salvar </button>
+                        </footer>
+                    </section>
+                </form>
+            </div>
+           
+        </div>
+
+    <div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><b>Upload de Imagem</b></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+             <div class="grid" style="height:500px;">
+                 <div class="col-12">
+                     <div class="actions">
+                           <input type="file" id="upload" name="foto" value="Choose a file" accept="image/*">
+                           <input type="hidden" class="upload-croppie" name="upload-croppie" />
+                     </div>
+                 </div>
+                 <hr />
+                 <div class="col-12">
+                     <div class="upload-msg">
+                     </div>
+                     <div class="upload-demo-wrap">
+                         <div id="upload-demo"></div>
+                     </div>
+                 </div>
+             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="saveCoopieUpload();">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="modalWebcam" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"><b>Imagem da Webcam</b></h5>
+            <button type="button" class="close" onclick="closeLayerWebcam();">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+               <div id="webcam_preview"></div>
+               <div id="webcam_capture_preview" style="display:none;"></div>
+               <button class="btn btn-primary btn-capture" onclick="generateCapture();">Capturar</button>
+               <button class="btn btn-default btn-webcam" onclick="redefineWebcam();" style="display:none;">Webcam</button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeLayerWebcam();" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="saveCoopieCapture();">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- end: page -->
+
+    <script type="text/javascript">
+
+     var webcam = false;
+
+      function openWebCamCapture() {
+        
+        $("#modalWebcam").modal();
+        $("#modalWebcam").show();
+        $('.btn-webcam').hide();
+        $('.btn-capture').show();
+        $('.btn-crop').hide();
+
+        $('#webcam_capture_preview').hide();
+        $('#webcam_preview').show();    
+
+        webcam = Webcam.set({
+          width: 332,
+          height: 256,
+          image_format: 'jpeg',
+          jpeg_quality: 90
+        });
+        Webcam.attach('#webcam_preview');
+      }
+
+      function generateCapture() {
+
+          Webcam.snap( function(data_uri) {
+            
+            $('#webcam_capture_preview').show();
+            $('#webcam_preview').hide();
+            $('#webcam_capture_preview').html('<img src="'+data_uri+'" />');
+            $('.btn-capture').hide();
+            $('.btn-crop').show();
+            $('.btn-webcam').show();
+
+            $uploadCrop = $('#webcam_capture_preview img').croppie({
+              viewport: {
+                  width: 200,
+                  height: 200,
+                  type: 'square'
+              },
+              enableExif: true,
+              enableResize: false,
+              boundary: {
+                  width: 300,
+                  height: 300 
+              }
+            });
+
+            Webcam.reset();
+
+          });
+      }
+
+      function saveCoopieCapture() {
+
+          $uploadCrop.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+          }).then(function (resp) {
+            $('input[name="img"]').val(resp);
+            $('.img-thumbnail').attr('src', resp);
+            $("#modalWebcam").hide();
+          });
+          Webcam.reset();
+      }
+
+      function saveCoopieUpload() {
+
+          $uploadCropUp.croppie('result', {
+            type: 'canvas',
+            size: 'viewport'
+          }).then(function (resp) {
+            $('input[name="img"]').val(resp);
+            $('.img-thumbnail').attr('src', resp);
+            $('.layer_fileupload').hide();       
+            $("#modalUpload").hide(); 
+          }); 
+
+      }
+
+      function redefineWebcam() {
+
+            $('#webcam_capture_preview').hide();
+            $('#webcam_preview').show();
+            $('.btn-crop').hide();
+            $('.btn-capture').show();
+            $('.btn-webcam').hide();
+      }
+
+      function closeLayerWebcam() {
+          $("#modalWebcam").hide();
+          Webcam.reset();
+      }
+
+
+      var $uploadCropUp;
+
+      function demoUpload() {
+        
+        function readFile(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              $uploadCropUp.croppie('bind', {
+                url: e.target.result
+              }).then(function(){
+                
+              });
+              
+            }        
+            reader.readAsDataURL(input.files[0]);
+          }          
+        }
+
+        $uploadCropUp = $('#upload-demo').croppie({
+          viewport: {
+              width: 250,
+              height: 250,
+              type: 'square'
+          },
+          enableExif: true,
+          enableResize: true,
+          boundary: {
+              width: 300,
+              height: 300 
+          }
+        });
+
+        $('#upload').on('change', function () { readFile(this); });
+
+      }
+
+      function openUpload() {
+        $("#modalUpload").modal();
+        $("#modalUpload").show();
+      } 
+
+      $(document).ready(function() {
+
+         mount_block_and_units({{ resident.unit.block_id }},{{ resident.unit_id }});
+
+         $('select[name="block"]').change(function() {
+           get_units_by_block();
+         });
+
+        demoUpload();
+
+      });
+
+      $('form').submit(function() {
+        if($('select[name="unit"]').val() == '') {
+          alert('Selecione uma unidade');
+          return false;
+        }
+
+      });
+
+
+    </script>
+
+{% endblock %}
+
+
