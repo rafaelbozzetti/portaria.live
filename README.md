@@ -45,7 +45,7 @@ composer install
 Copie o arquivo ```env.example``` na raiz do projeto para ```.env```, edite e configure conforme o ambiente.
 
 ```sh
-DB_DATABASE=portaria.live
+DB_DATABASE=portarialive
 DB_USERNAME=
 DB_PASSWORD=
 
