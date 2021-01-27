@@ -40,8 +40,8 @@ class CreateVehicles extends Migration
             $table->string('color')->nullable();
             $table->string('plate')->nullable();
             $table->integer('type'); 
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
             $table->unsignedInteger('people_id')->nullable();
             $table->unsignedInteger('visitor_id')->nullable();
         });

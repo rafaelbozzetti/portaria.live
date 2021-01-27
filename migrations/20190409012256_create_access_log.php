@@ -37,9 +37,9 @@ class CreateAccessLog extends Migration
         $this->schema->create('access_log', function (Blueprint $table) {
 
             $table->increments('id');
-	    $table->integer('status');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+    	    $table->integer('status');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
             $table->unsignedInteger('people_id');
             $table->unsignedInteger('vehicle_id')->nullable();
             $table->unsignedInteger('unit_id');

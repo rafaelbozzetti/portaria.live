@@ -40,9 +40,9 @@ class CreateVisitors extends Migration
             $table->string('name')->nullable();
             $table->string('document');
             $table->integer('service_provider')->default(0);
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
-            $table->index('id');            
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
+            $table->index('id');
 
         });
 
