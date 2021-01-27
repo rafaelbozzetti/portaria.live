@@ -37,8 +37,8 @@ class VisitorLog extends Migration
         $this->schema->create('visitor_log', function (Blueprint $table) {
 	        $table->increments('id');
 	        $table->integer('type');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
             $table->unsignedInteger('people_id');
             $table->unsignedInteger('visitor_id');
             $table->unsignedInteger('vehicle_id')->nullable();

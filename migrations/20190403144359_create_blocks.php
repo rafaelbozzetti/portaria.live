@@ -39,8 +39,8 @@ class CreateBlocks extends Migration
 
             $table->increments('id');
             $table->string('name')->nullable();
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
             $table->index('id');            
         });
 

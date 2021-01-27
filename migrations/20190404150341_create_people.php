@@ -42,8 +42,8 @@ class CreatePeople extends Migration
             $table->string('email')->nullable();
             $table->boolean('active');
             $table->integer('type');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
             $table->unsignedInteger('unit_id');
 
         });

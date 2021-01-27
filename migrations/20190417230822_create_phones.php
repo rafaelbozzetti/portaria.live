@@ -39,8 +39,8 @@ class CreatePhones extends Migration
             $table->increments('id');
             $table->enum('type', ['phone', 'mobile', 'exten']);
             $table->string('number');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
             $table->unsignedInteger('people_id')->nullable();
             $table->unsignedInteger('visitor_id')->nullable();
 

@@ -41,8 +41,8 @@ class CreateUsers extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('type');
-            $table->timestamp('created_at');
-            $table->timestamp('updated_at');
+            $table->timestamp('created_at')->nullable()->default(null);
+            $table->timestamp('updated_at')->nullable()->default(null);
 
         });
 
